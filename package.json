@@ -1,0 +1,26 @@
+{
+  "devDependencies": {
+    "@aws-sdk/client-dynamodb": "^3.632.0",
+    "@shelf/jest-dynamodb": "^3.5.0",
+    "aws-sdk-client-mock-jest": "^4.0.1",
+    "aws-sdk-mock": "^6.1.1",
+    "serverless-bundle": "^6.1.0",
+    "serverless-dynamodb-local": "^0.2.10",
+    "serverless-jest-plugin": "^0.4.0",
+    "serverless-offline": "^13.4.0",
+    "serverless-openapi-documenter": "^0.0.104"
+  },
+  "dependencies": {
+    "@aws-sdk/lib-dynamodb": "^3.564.0",
+    "@types/jest": "^29.5.12",
+    "jest": "^29.7.0",
+    "jest-environment-jsdom": "28.1.2",
+    "ts-jest": "^29.2.4"
+  },
+  "scripts": {
+    "test": "serverless-bundle test",
+    "local": "sls offline --stage=dev",
+    "jest": "jest"
+  },
+  "type": "module"
+}

@@ -1,0 +1,369 @@
+openapi: 3.0.2
+servers:
+  - description: Severless Framework project
+    url: http://localhost.com/3000/dev
+info:
+  description: swapi traducido
+  version: 1.0.0
+  title: SwapiES
+tags:
+  - name: SwapiES
+    description: SwapiES
+paths:
+  /clients:
+    get:
+      summary: Get all clients
+      description: Retrieves a list of all clients in the database.
+      responses:
+        "200":
+          description: A JSON array of client objects
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/client"
+        "400":
+          description: Invalid request body
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+    post:
+      summary: Create a new client
+      description: Adds a new client to the database.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/client"
+      responses:
+        "201":
+          description: Client created successfully
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/client"
+        "400":
+          description: Invalid request body
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+
+  /clients/{id}:
+    get:
+      summary: Get a single client by ID
+      description: Retrieves a single client object from the database.
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            default: 1
+      responses:
+        "200":
+          description: A JSON object representing the client
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/client"
+    put:
+      summary: Update an existing client
+      description: Updates a single client object in the database.
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/client"
+      responses:
+        "200":
+          description: The updated client object
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/client"
+    delete:
+      summary: Delete a single client by ID
+      description: Deletes a single client object from the database.
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "204":
+          description: No content
+
+  /people:
+    get:
+      summary: Get all people
+      description: Retrieves a list of all people in the database.
+      responses:
+        "200":
+          description: A JSON array of person objects
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/person"
+
+  /people/{id}:
+    get:
+      summary: Get a single person by ID
+      description: Retrieves a single person object from the database.
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            default: 1
+      responses:
+        "200":
+          description: A JSON object representing the person
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/person"
+
+  /vehicles:
+    get:
+      summary: Get all vehicles
+      description: Retrieves a list of all vehicles in the database.
+      responses:
+        "200":
+          description: A JSON array of vehicle objects
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/vehicle"
+
+  /vehicles/{id}:
+    get:
+      summary: Get a single vehicle by ID
+      description: Retrieves a single vehicle object from the database.
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            default: 1
+      responses:
+        "200":
+          description: A JSON object representing the vehicle
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/vehicle"
+
+  /planets:
+    get:
+      summary: Obtiene una lista de planetas
+      description: Devuelve una lista de planetas con sus respectivas características
+      responses:
+        "200":
+          description: Planetas obtenidos correctamente
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/planet"
+
+  /planets/{id}:
+    get:
+      summary: Obtiene un planeta por id
+      description: Devuelve la información de un planeta específico según su id
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Planeta obtenido correctamente
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/planet"
+
+  /films:
+    get:
+      summary: Obtiene una lista de películas
+      description: Devuelve una lista de películas con sus respectivas características
+      responses:
+        "200":
+          description: Películas obtenidas correctamente
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/film"
+
+  /films/{id}:
+    get:
+      summary: Obtiene una película por id
+      description: Devuelve la información de una película específica según su id
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Película obtenida correctamente
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/film"
+
+  /species:
+    get:
+      summary: Obtiene una lista de especies
+      description: Devuelve una lista de especies con sus respectivas características
+      responses:
+        "200":
+          description: Especies obtenidas correctamente
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/specie"
+
+  /species/{id}:
+    get:
+      summary: Obtiene una especie por id
+      description: Devuelve la información de una especie específica según su id
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Especie obtenida correctamente
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/specie"
+
+components:
+  schemas:
+    client:
+      type: object
+      properties:
+        documentNumber:
+          type: string
+          description: The client's document number
+        name:
+          type: string
+          description: The client's name
+        email:
+          type: string
+          description: The client's email address
+
+    person:
+      type: object
+      properties:
+        id:
+          type: integer
+          description: The person's ID
+        name:
+          type: string
+          description: The person's name
+        birthYear:
+          type: integer
+          description: The person's birth year
+        eyeColor:
+          type: string
+          description: The person's eye color
+
+    vehicle:
+      type: object
+      properties:
+        id:
+          type: integer
+          description: The vehicle's ID
+        make:
+          type: string
+          description: The vehicle's make
+        model:
+          type: string
+          description: The vehicle's model
+        year:
+          type: integer
+          description: The vehicle's year
+
+    planet:
+      type: object
+      properties:
+        id:
+          type: string
+          description: Identificador del planeta
+        nombre:
+          type: string
+          description: Nombre del planeta
+        tipo:
+          type: string
+          description: Tipo de planeta (terrestre, gaseoso, etc.)
+        distanciaMedia:
+          type: number
+          description: Distancia media al sol en unidades astronómicas
+
+    film:
+      type: object
+      properties:
+        id:
+          type: string
+          description: Identificador de la película
+        título:
+          type: string
+          description: Título de la película
+        director:
+          type: string
+          description: Director de la película
+        añoLanzamiento:
+          type: integer
+          description: Año de lanzamiento de la película
+        duración:
+          type: string
+          description: Duración de la película en minutos
+
+    specie:
+      type: object
+      properties:
+        id:
+          type: string
+          description: Identificador de la especie
+        nombre:
+          type: string
+          description: Nombre de la especie
+        tipo:
+          type: string
+          description: Tipo de especie (mamífero, ave, reptil, etc.)

@@ -1,0 +1,443 @@
+org: juancodes
+app: softek-backend
+service: softek-backend
+
+provider:
+  name: aws
+  runtime: nodejs20.x
+
+# Tener en consideración que las funciones SWAPI además de get de 1 elemento y get de todos los elementos se puede realizar un search en base al atributo nombre
+functions: # Se agregan fuunciones para realizar CRUD para clientes , el resto de endpoints siguen la misma estructura , primero la entidad relacionada y luego lo que se busca obtener
+  clientsGetAll:
+    handler: clients/getAll/handler.getAll
+    environment:
+      DYNAMODB_TABLE_NAME:
+        Ref: clientsTable
+    events:
+      - http:
+          path: /clients
+          method: get
+          cors: true
+  clientsCreate:
+    handler: clients/createOne/handler.createOne
+    environment:
+      DYNAMODB_TABLE_NAME:
+        Ref: clientsTable
+    events:
+      - http:
+          path: /clients
+          method: post
+          cors: true
+  clientsGetOne:
+    handler: clients/getOne/handler.getOne
+    environment:
+      DYNAMODB_TABLE_NAME:
+        Ref: clientsTable
+    events:
+      - http:
+          path: clients/{id}
+          method: get
+          cors: true
+  clientsUpdateOne:
+    handler: clients/updateOne/handler.updateOne
+    environment:
+      DYNAMODB_TABLE_NAME:
+        Ref: clientsTable
+    events:
+      - http:
+          path: clients/{id}
+          method: put
+          cors: true
+  clientsDeleteOne:
+    handler: clients/deleteOne/handler.deleteOne
+    environment:
+      DYNAMODB_TABLE_NAME:
+        Ref: clientsTable
+    events:
+      - http:
+          path: clients/{id}
+          method: delete
+          cors: true
+  peopleGetAll: # Este es el equivalente de https://swapi.py4e.com/api/people/ y traduce sus atributos a español
+    handler: handler.peopleGetAll
+    events:
+      - http:
+          path: /people
+          method: get
+          cors: true
+  peopleGetOne: # Este es el equivalente de https://swapi.py4e.com/api/people/{id} y traduce sus atributos a español
+    handler: handler.peopleGetOne
+    events:
+      - http:
+          path: /people/{id}
+          method: get
+          cors: true
+  planetsGetAll: # Este es el equivalente de https://swapi.py4e.com/api/planets/ y traduce sus atributos a español
+    handler: handler.planetsGetAll
+    events:
+      - http:
+          path: /planets
+          method: get
+          cors: true
+  planetsGetOne: # Este es el equivalente de https://swapi.py4e.com/api/planets/{id} y traduce sus atributos a español
+    handler: handler.planetsGetOne
+    events:
+      - http:
+          path: /planets/{id}
+          method: get
+          cors: true
+  filmsGetAll: # Este es el equivalente de https://swapi.py4e.com/api/films/ y traduce sus atributos a español
+    handler: handler.filmsGetAll
+    events:
+      - http:
+          path: /films
+          method: get
+          cors: true
+  filmsGetOne: # Este es el equivalente de https://swapi.py4e.com/api/films/{id} y traduce sus atributos a español
+    handler: handler.filmsGetOne
+    events:
+      - http:
+          path: /films/{id}
+          method: get
+          cors: true
+  speciesGetAll: # Este es el equivalente de https://swapi.py4e.com/api/species/ y traduce sus atributos a español
+    handler: handler.speciesGetAll
+    events:
+      - http:
+          path: /species
+          method: get
+          cors: true
+  speciesGetOne: # Este es el equivalente de https://swapi.py4e.com/api/species/{id} y traduce sus atributos a español
+    handler: handler.speciesGetOne
+    events:
+      - http:
+          path: /species/{id}
+          method: get
+          cors: true
+  vehiclesGetAll: # Este es el equivalente de https://swapi.py4e.com/api/vehicles/ y traduce sus atributos a español
+    handler: handler.vehiclesGetAll
+    events:
+      - http:
+          path: /vehicles
+          method: get
+          cors: true
+  vehiclesGetOne: # Este es el equivalente de https://swapi.py4e.com/api/vehicles/{id} y traduce sus atributos a español
+    handler: handler.vehiclesGetOne
+    events:
+      - http:
+          path: /vehicles/{id}
+          method: get
+          cors: true
+
+resources: # Modelo de la tabla de base de datos, se crea la llave dni , al ser schemaless no requiere mayor detalle que su llave
+  Resources:
+    clientsTable:
+      Type: AWS::DynamoDB::Table
+      Properties:
+        TableName: softek_backend_client
+        AttributeDefinitions:
+          - AttributeName: documentNumber
+            AttributeType: S
+        KeySchema:
+          - AttributeName: documentNumber
+            KeyType: HASH
+        ProvisionedThroughput:
+          ReadCapacityUnits: 1
+          WriteCapacityUnits: 1
+
+plugins:
+  - serverless-offline
+  - serverless-jest-plugin
+  - serverless-dynamodb-local
+  - serverless-openapi-documenter
+custom:
+  documentation:
+    openapi: 3.0.2
+    info:
+    title: swapi-translator
+    version: "1"
+    description: This is an api to translate SWAPI attributes and manage crud petitions for client
+    servers:
+      - url: https://3ar6izyq09.execute-api.us-east-1.amazonaws.com/dev
+        description: The server in which it's deployed the base URL of the endpoints deployed
+        variables:
+          port:
+            enum:
+              - 4000
+              - 3000
+            default: 3000
+            description: The port the server operates on
+    paths:
+      /clients:
+        get:
+          summary: Obtains a list of clients
+          description: Returns a list of clients with their respective characteristics
+          responses:
+            "200":
+              description: Clients obtained correctly
+              content:
+                application/json:
+                  schema:
+                    type: array
+                    items:
+                      $ref: "#/components/schemas/client"
+      /clients/{id}:
+        get:
+          summary: Obtains a client by id
+          description: Returns the information of a client specific according to its id
+          parameters:
+            - in: path
+              name: id
+              required: true
+              schema:
+                type: string
+          responses:
+            "200":
+              description: Client obtained correctly
+              content:
+                application/json:
+                  schema:
+                    $ref: "#/components/schemas/client"
+      /people:
+        get:
+          summary: Obtains a list of people
+          description: Returns a list of people with their respective characteristics
+          responses:
+            "200":
+              description: People obtained correctly
+              content:
+                application/json:
+                  schema:
+                    type: array
+                    items:
+                      $ref: "#/components/schemas/person"
+      /people/{id}:
+        get:
+          summary: Obtains a person by id
+          description: Returns the information of a person specific according to its id
+          parameters:
+            - in: path
+              name: id
+              required: true
+              schema:
+                type: integer
+          responses:
+            "200":
+              description: Person obtained correctly
+              content:
+                application/json:
+                  schema:
+                    $ref: "#/components/schemas/person"
+      /vehicles:
+        get:
+          summary: Obtains a list of vehicles
+          description: Returns a list of vehicles with their respective characteristics
+          responses:
+            "200":
+              description: Vehicles obtained correctly
+              content:
+                application/json:
+                  schema:
+                    type: array
+                    items:
+                      $ref: "#/components/schemas/vehicle"
+      /vehicles/{id}:
+        get:
+          summary: Obtains a vehicle by id
+          description: Returns the information of a vehicle specific according to its id
+          parameters:
+            - in: path
+              name: id
+              required: true
+              schema:
+                type: integer
+          responses:
+            "200":
+              description: Vehicle obtained correctly
+              content:
+                application/json:
+                  schema:
+                    $ref: "#/components/schemas/vehicle"
+      /planets:
+        get:
+          summary: Obtains a list of planets
+          description: Returns a list of planets with their respective characteristics
+          responses:
+            "200":
+              description: Planets obtained correctly
+              content:
+                application/json:
+                  schema:
+                    type: array
+                    items:
+                      $ref: "#/components/schemas/planet"
+      /planets/{id}:
+        get:
+          summary: Obtains a planet by id
+          description: Returns the information of a planet specific according to its id
+          parameters:
+            - in: path
+              name: id
+              required: true
+              schema:
+                type: string
+          responses:
+            "200":
+              description: Planet obtained correctly
+              content:
+                application/json:
+                  schema:
+                    $ref: "#/components/schemas/planet"
+      /people/{id}/planets:
+        get:
+          summary: Obtains a list of planets related to a person by id
+          description: Returns a list of planets with their respective characteristics, that are related to the specified person
+          parameters:
+            - in: path
+              name: id
+              required: true
+              schema:
+                type: integer
+          responses:
+            "200":
+              description: Planets obtained correctly
+              content:
+                application/json:
+                  schema:
+                    type: array
+                    items:
+                      $ref: "#/components/schemas/planet"
+      /people/{id}/vehicles:
+        get:
+          summary: Obtains a list of vehicles related to a person by id
+          description: Returns a list of vehicles with their respective characteristics, that are related to the specified person
+          parameters:
+            - in: path
+              name: id
+              required: true
+              schema:
+                type: integer
+          responses:
+            "200":
+              description: Vehicles obtained correctly
+              content:
+                application/json:
+                  schema:
+                    type: array
+                    items:
+                      $ref: "#/components/schemas/vehicle"
+      /starships:
+        get:
+          summary: Obtains a list of starships
+          description: Returns a list of starships with their respective characteristics
+          responses:
+            "200":
+              description: Starships obtained correctly
+              content:
+                application/json:
+                  schema:
+                    type: array
+                    items:
+                      $ref: "#/components/schemas/starship"
+      /starships/{id}:
+        get:
+          summary: Obtains a starship by id
+          description: Returns the information of a starship specific according to its id
+          parameters:
+            - in: path
+              name: id
+              required: true
+              schema:
+                type: string
+          responses:
+            "200":
+              description: Starship obtained correctly
+              content:
+                application/json:
+                  schema:
+                    $ref: "#/components/schemas/starship"
+      components:
+      schemas:
+        client:
+          type: object
+          properties:
+            id:
+              type: string
+              description: The client's unique identifier
+            name:
+              type: string
+              description: The client's name
+        person:
+          type: object
+          properties:
+            id:
+              type: integer
+              description: The person's unique identifier
+            name:
+              type: string
+              description: The person's name
+            height:
+              type: number
+              description: The person's height in cm
+            mass:
+              type: number
+              description: The person's mass in kg
+        vehicle:
+          type: object
+          properties:
+            id:
+              type: integer
+              description: The vehicle's unique identifier
+            name:
+              type: string
+              description: The vehicle's name
+            model:
+              type: string
+              description: The vehicle's model
+            manufacturer:
+              type: string
+              description: The vehicle's manufacturer
+        planet:
+          type: object
+          properties:
+            id:
+              type: string
+              description: The planet's unique identifier
+            name:
+              type: string
+              description: The planet's name
+            diameter:
+              type: number
+              description: The planet's diameter in km
+        starship:
+          type: object
+          properties:
+            id:
+              type: string
+              description: The starship's unique identifier
+            name:
+              type: string
+              description: The starship's name
+            model:
+              type: string
+              description: The starship's model
+    jest:
+      # You can pass jest options here
+      # See details here: https://facebook.github.io/jest/docs/configuration.html
+      # For instance, uncomment next line to enable code coverage
+      collectCoverage: true
+    dynamodb:
+      stages:
+        - dev
+      start:
+        port: 8000
+        inMemory: true
+        migration: true
+package:
+  exclude:
+    - node_modules/**
+    - .git/**
+    - .vscode/**
+    - README.md
+    - package-lock.json
+  excludeDevDependencies: true
